@@ -4,15 +4,7 @@
 
 # project related aliases
 # fantasy startup
-alias fs="cd ~/Documents/doriot/fantasy-startup_0.2.0"
 alias yst="yarn start --tunnel"
-# jameshe.me
-alias me="cd ~/Documents/jameshe.me"
-# school
-alias sp20="cd ~/Documents/school/sp20"
-alias school="cd ~/Documents/school"
-
-alias diary="/bin/bash ~/Documents/.journal/diaryman/diaryman.sh"
 
 # volume controls
 alias mute="amixer -D pulse set Master 1+ toggle"
@@ -23,7 +15,7 @@ alias volume="amixer -D pulse sset Master"
 export REACT_EDITOR=vim
 
 # anaconda
-alias ccj="conda init && wait conda activate && jupyter notebook"
+alias ccj="conda init && conda activate && jupyter notebook"
 
 # zathura
 alias z="zathura"
