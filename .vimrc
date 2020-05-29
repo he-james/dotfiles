@@ -1,131 +1,130 @@
-set nocompatible              " required
-filetype off                  " required
-
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-
-" pathogen execute
-execute pathogen#infect()
-syntax on
-filetype plugin on
-filetype indent on
-
-" let Vundle manage Vundle, required
-Plugin 'gmarik/Vundle.vim'
+" vimrc - James He
 
 " Plugins
-Plugin 'vim-scripts/indentpython.vim'
-Plugin 'tmhedberg/SimpylFold'
-Bundle 'Valloric/YouCompleteMe'
-Plugin 'vim-syntastic/syntastic'
-Plugin 'nvie/vim-flake8'
+set nocompatible
+filetype off
+" Start Vundle - THIS IS CONFIGURED FOR WINDOWS, SORRY
+" REFER TO VUNDLE DOCS FOR UNIX-BASED MACHINES
+set rtp+=$HOME/.vim/bundle/Vundle.vim/
+call vundle#begin('$HOME/.vim/bundle/')
+" Plugin List
+Plugin 'VundleVim/Vundle.vim'
 Plugin 'morhetz/gruvbox'
-Plugin 'scrooloose/nerdtree'
-Plugin 'vim-airline/vim-airline'
-Plugin 'tpope/vim-git'
-Plugin 'jiangmiao/auto-pairs'
+Plugin 'preservim/nerdtree'
 Plugin 'prettier/vim-prettier'
-Plugin 'xuhdev/vim-latex-live-preview'
-Plugin 'vim-latex/vim-latex'
+Plugin 'itchyny/lightline.vim'
+Plugin 'tpope/vim-fugitive'
+Plugin 'dense-analysis/ale'
+Plugin 'ycm-core/YouCompleteMe'
+Plugin 'jiangmiao/auto-pairs'
+" End Vundle
+call vundle#end()
+filetype plugin indent on
 
-call vundle#end()            " required
-filetype plugin indent on    " required
+" Set encoding to UTF-8
+set encoding=utf-8
 
-let g:gruvbox_contrast_dark = 'hard'
-let g:gruvbox_contrast_light = 'hard'
+" Gruvbox theme configuration
+let g:gruvbox_termcolors=16
+let g:gruvbox_contrast_dark='hard'
+let g:gruvbox_contrast_light='hard'
 set background=dark
 colorscheme gruvbox
 
+" Lightline
+set laststatus=2
+set noshowmode
+let g:lightline={
+    \ 'active': {
+    \   'left': [ [ 'mode', 'paste' ],
+    \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+    \   },
+    \ 'component_function': {
+    \   'gitbranch':'FugitiveHead',
+    \   'filename': 'RelativeFilePath',
+    \   },
+    \ }
+function! RelativeFilePath()
+    return @%
+endfunction
+let g:unite_force_overwrite_statusline=0
+let g:vimfiler_force_overwrite_statusline=0
+let g:vimshell_force_overwrite_statusline=0
+
+" NERDTree
+let g:NERDTreeWinPos='right'
+let g:NERDTreeWinSize=35
+map <leader>nn :NERDTreeToggle<cr>
+
+" Don't redraw while executing macros
+set lazyredraw
+
+" Error sounds
+set noerrorbells
+set novisualbell
+set t_vb=
+set tm=500
+
+" Splits are not shit
+set splitbelow
+set splitright
+
+" Color syntax
 syntax enable
+
+" Set to auto read when a file is changed from the outside
+set autoread
+au FocusGained,BufEnter * checktime
+
+" Faster saving and quitting
+nmap <leader>w :w!<cr>
+nmap <leader>wq :wq!<cr>
+
+" Line numbering
 set number relativenumber
 set nu rnu
-filetype indent on
-set autoindent
 
-let g:livepreview_previewer = 'zathura'
+" Backspaces
+set backspace=eol,start,indent
+set whichwrap+=<,>,h,l
 
-let python_highlight_all = 1
-let g:SimpylFold_docstring_preview=1
-
-let g:ycm_autoclose_preview_window_after_completion=1
-map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
-
-au BufNewFile,BufRead *.py
-    \ set tabstop=4 |
-    \ set softtabstop=4 |
-    \ set shiftwidth=4 |
-    \ set textwidth=79 |
-    \ set expandtab |
-    \ set autoindent |
-    \ set fileformat=unix |
-    \ set colorcolumn=80 |
-    \ highlight ColorColumn ctermbg=darkgray
-
-au BufNewFile,BufRead *.js,*.jsx,*.html,*.css
-    \ set tabstop=2 |
-    \ set softtabstop=2 |
-    \ set noexpandtab |
-    \ set shiftwidth=2 |
-    \ highlight ColorColumn ctermbg=magenta |
-    \ call matchadd('ColorColumn','\%81v',100)
-
-au BufNewFile,BufRead *.c,*.cpp
-    \ set tabstop=4 |
-    \ set softtabstop=4 |
-    \ set shiftwidth=4 |
-    \ set noexpandtab |
-    \ set colorcolumn=110 |
-    \ highlight ColorColumn ctermbg=darkgray
-
-au BufNewfile,BufRead *.tex
-    \ set sw=2 |
-    \ set iskeyword+=:
-
+" Highlight
+" Search terms
 set hlsearch
 
-nnoremap <silent> n  n:call HLNext(0.4)<cr>
-nnoremap <silent> N  N:call HLNext(0.4)<cr>
+" Comments
+highlight Comment ctermfg=grey
 
-function! HLNext (blinktime)
-    set invcursorline
-    redraw
-    exec 'sleep ' . float2nr(a:blinktime * 1000) . 'm'
-    set invcursorline
-    redraw
-endfunction
+" Show ruler
+set ruler
 
-exec "set listchars=tab:\uBB\uBB,trail:\uB7,nbsp:~"
-set list
+" tabs and indentation
+set autoindent
+set tabstop=4
+set shiftwidth=4
+set textwidth=79
+set expandtab
 
-let pipenv_venv_path = system('pipenv --venv')
-if shell_error == 0
-  let venv_path = substitute(pipenv_venv_path, '\n', '', '')
-  let g:ycm_python_binary_path = venv_path . '/bin/python'
-else
-  let g:ycm_python_binary_path = 'python'
-endif
+" show matching brackets
+set showmatch
+set matchtime=3
 
-let g:ale_linters = {
-\   'python': ['flake8', 'pylint'],
-\   'javascript': ['eslint'],
-\   'vue': ['eslint']
-\}
+" ale linting
+let g:ale_linters={
+    \ 'python': ['flake8', 'pylint'],
+    \ 'javascript': ['eslint'],
+    \ }
+let b:ale_fixers={
+    \ '*': ['remove_trailing_lines', 'trim_whitespace'],
+    \ 'python': ['flake8', 'pylint'],
+    \ 'javascript': ['prettier', 'eslint'],
+    \ 'vue': ['eslint'],
+    \ 'scss': ['prettier'],
+    \ 'html': ['prettier'],
+    \ }
+let g:ale_fix_on_save=1
 
-let g:ale_fixers = {
-  \    'javascript': ['eslint'],
-  \    'typescript': ['prettier', 'tslint'],
-  \    'vue': ['eslint'],
-  \    'scss': ['prettier'],
-  \    'html': ['prettier'],
-  \    'reason': ['refmt']
-\}
-let g:ale_fix_on_save = 1
-
-let g:tex_flavor='latex'
-
-
-
+" Reformatting
 au FileType javascript setlocal formatprg=prettier
 au FileType javascript.jsx setlocal formatprg=prettier
 au FileType typescript setlocal formatprg=prettier\ --parser\ typescript
@@ -133,5 +132,30 @@ au FileType html setlocal formatprg=js-beautify\ --type\ html
 au FileType scss setlocal formatprg=prettier\ --parser\ css
 au FileType css setlocal formatprg=prettier\ --parser\ css
 
-set exrc
-set secure
+" python specific buffer configs
+au BufNewFile,BufRead *.py
+    \ set tabstop=4 |
+    \ set softtabstop=4 |
+    \ set shiftwidth=4 |
+    \ set textwidth=79 |
+    \ set fileformat=unix |
+    \ set colorcolumn=80 |
+    \ highlight ColorColumn ctermbg=darkgray
+
+" js / html / css specific configs
+au BufNewFile,BufRead *.js,*.jsx,*.html,*.css
+    \ set tabstop=2 |
+    \ set softtabstop=2 |
+    \ set shiftwidth=2 |
+    \ highlight ColorColumn ctermbg=darkgray |
+    \ call matchadd('ColorColumn','\%81v',100)
+
+" Highlight trailing whitespace
+highlight ExtraWhitespace ctermbg=grey guibg=grey
+match ExtraWhitespace /\s\+$/
+
+augroup ColorcolumnOnlyInInsertMode
+  autocmd!
+  autocmd InsertEnter * setlocal colorcolumn=80
+  autocmd InsertLeave * setlocal colorcolumn=0
+augroup END
